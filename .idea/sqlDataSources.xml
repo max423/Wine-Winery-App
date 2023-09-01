@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DdlMappings">
+    <mapping uuid="99454386-2dea-424d-8300-8c6e0d11f424" name="winewinery@localhost Mapping">
+      <data-sources db="ef5cc162-53c6-4688-a49d-87925a10eea4" ddl="51088fb7-943a-49bd-88a7-9716a6de2663" />
+    </mapping>
+  </component>
+</project>
