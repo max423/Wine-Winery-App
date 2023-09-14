@@ -1,5 +1,4 @@
 package it.unipi.dii.lsmd.winewineryapp.utils;
-import it.unipi.dii.lsmd.winewineryapp.Main;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;

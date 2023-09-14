@@ -9,8 +9,6 @@ import it.unipi.dii.lsmd.winewineryapp.persistence.MongoDriver;
 import it.unipi.dii.lsmd.winewineryapp.persistence.Neo4jDriver;
 import it.unipi.dii.lsmd.winewineryapp.persistence.Neo4jManager;
 import it.unipi.dii.lsmd.winewineryapp.utils.utilitis;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -19,21 +17,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.util.Pair;
-import org.controlsfx.control.spreadsheet.Grid;
-import javafx.scene.control.ToggleGroup;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 
 public class SuggestionController {

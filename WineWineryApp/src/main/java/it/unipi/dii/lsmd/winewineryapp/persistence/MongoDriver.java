@@ -1,6 +1,5 @@
 package it.unipi.dii.lsmd.winewineryapp.persistence;
 
-import com.mongodb.client.MongoDatabase;
 import it.unipi.dii.lsmd.winewineryapp.utils.utilitis;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
