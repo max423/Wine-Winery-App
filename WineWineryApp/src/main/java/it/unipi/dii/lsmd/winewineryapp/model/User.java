@@ -25,7 +25,6 @@ public class User {
         this.winerys = winerys;
     }
 
-    // normal user 0
     public User(String username, String email) {
         this(username, email, null, null, null, -1, null,null, 0);
     }

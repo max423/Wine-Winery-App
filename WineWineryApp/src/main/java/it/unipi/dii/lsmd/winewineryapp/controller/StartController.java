@@ -10,7 +10,6 @@ public class StartController {
     private Label welcomeText;
     private ActionEvent event;
 
-
     @FXML
     protected void onButtonLogin(ActionEvent event) throws IOException {
         this.event = event;

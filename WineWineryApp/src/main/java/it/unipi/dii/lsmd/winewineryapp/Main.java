@@ -17,7 +17,6 @@ public class Main extends Application {
         stage.getIcons().add(new Image(getClass().getResourceAsStream( "img/iconApp.png")));
         stage.show();
     }
-
     public static void main(String[] args) {
         launch();
     }

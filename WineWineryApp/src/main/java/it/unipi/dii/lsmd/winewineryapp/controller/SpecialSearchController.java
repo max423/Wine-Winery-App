@@ -17,23 +17,22 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 
-public class SuggestionController {
+public class SpecialSearchController {
     private ActionEvent event;
     private MongoDBManager mongoManager;
     private Neo4jManager neo4jManager;
     private User user;
     private int page;
-    private int special;
 
     @FXML
     private Label username_side;
@@ -53,18 +52,20 @@ public class SuggestionController {
     @FXML private CheckBox SugCHECK;
     @FXML private CheckBox AnaCHECK;
 
+    @FXML private Button gotomyprofile;
+
 
     public void initialize () {
         mongoManager = new MongoDBManager(MongoDriver.getInstance().openConnection());
         neo4jManager = new Neo4jManager(Neo4jDriver.getInstance().openConnection());
         user = Session.getInstance().getLoggedUser();
-        special = 0;
-
-
         initSearch();
 
         nextBTN.setOnMouseClicked(mouseEvent -> goForward());
         backBTN.setOnMouseClicked(mouseEvent -> goBack());
+
+        if (Session.getInstance().getLoggedUser().getType() == 2)
+            gotomyprofile.setVisible(false);
     }
 
     // inizializza la ricerca
@@ -77,6 +78,9 @@ public class SuggestionController {
         ResearchType.setVisible(false);
         PeriodBox.setVisible(false);
 
+        if (user.getType() == 2) { // admin
+            SugCHECK.setText("Summary");
+        }
         List<String> timeRange = new ArrayList<>();
         timeRange.add("Week");
         timeRange.add("Month");
@@ -90,14 +94,17 @@ public class SuggestionController {
         CheckBox selectedCheckBox = (CheckBox) event.getSource();
         ResearchType.setVisible(true);
 
-        if (selectedCheckBox == SugCHECK && SugCHECK.isSelected()) {
-            // SUGGERIMENTI
+        if (selectedCheckBox == SugCHECK && SugCHECK.isSelected()) {    // SUGGESTIONS se normal user oppure SUMMARY se admin
+            if(Session.getInstance().getLoggedUser().getType() == 2 )
+                loadSummary();      // SUMMARY
+            else
+                loadSuggestions();  // SUGGESTIONS
+
             AnaCHECK.setSelected(false);
-            loadSuggestions();
+
         } else if (selectedCheckBox == AnaCHECK && AnaCHECK.isSelected()) {
-            // ANALYTICS
             SugCHECK.setSelected(false);
-            loadAnalytics();
+            loadAnalytics();        // ANALYTICS
         }
     }
 
@@ -110,7 +117,17 @@ public class SuggestionController {
         ObservableList<String> observableListType = FXCollections.observableList(typeList);
         ResearchType.getItems().clear();
         ResearchType.setItems(observableListType);
+    }
 
+    private void loadSummary() {
+        List<String> typeList = new ArrayList<>();
+        typeList.add("1 : Wines In Category");
+        typeList.add("2 : Comments In Category");
+        typeList.add("3 : Likes In Category");
+
+        ObservableList<String> observableListType = FXCollections.observableList(typeList);
+        ResearchType.getItems().clear();
+        ResearchType.setItems(observableListType);
     }
     private void loadAnalytics() {
         List<String> typeList = new ArrayList<>();
@@ -132,7 +149,7 @@ public class SuggestionController {
         nextBTN.setDisable(true);
         backBTN.setDisable(true);
         searchBTN.setDisable(false);
-        if(ResearchType.getValue()=="Most commented wines")
+        if(ResearchType.getValue()=="Most commented wines" || ResearchType.getValue()=="2 : Comments In Category" )
             PeriodBox.setVisible(true);
         else
             PeriodBox.setVisible(false);
@@ -141,10 +158,15 @@ public class SuggestionController {
     @FXML
     void startResearch() {
         cleanGrid();
+        if(ResearchType.getValue()=="Most commented wines" || ResearchType.getValue()=="2 : Comments In Category" )
+            searchBTN.setDisable(false);
+        else
+            searchBTN.setDisable(true);
+
+        backBTN.setDisable(false);
         nextBTN.setDisable(false);
-        searchBTN.setDisable(true);
+
         errorTf.setText("");
-        special = 1;
 
         if (SugCHECK.isSelected()){
             if (ResearchType.getValue() == null) {
@@ -152,24 +174,50 @@ public class SuggestionController {
                 return;
             }
             switch (ResearchType.getValue()) {
+                // SUGGESTIONS
                 case "Wines" -> {
                     List<Wine> sugwines = neo4jManager.getSnapsOfSuggestedWines(user, 2,
                             1, 2 * page, 1 * page);
                     fillWines(sugwines);
-                    System.out.println("ok" + sugwines);
+                    //System.out.println("ok" + sugwines);
                 }
                 case "Users" -> {
                     List<User> sugguser = neo4jManager.getSnapsOfSuggestedUsers(user, 4,
                             4, 4 * page, 4 * page);
                     fillUsers(sugguser);
-                    System.out.println("ok" + sugguser);
+                    //System.out.println("ok" + sugguser);
                 }
                 case "Winerys" -> {
                     List<Pair<String, Winery>> suggwinerys = neo4jManager.getSnapsOfSuggestedWinerys(user, 2, 2,
                                     2 * page, 2 * page);
                     fillWinerys(suggwinerys);
-                    System.out.println("ok" + suggwinerys);
+                    //System.out.println("ok" + suggwinerys);
                 }
+
+                // SUMMARY
+                case "1 : Wines In Category" ->{
+                    List<Pair<String, Integer>> list;
+                    list = mongoManager.getVarietalsSummaryByNumberOfWines();
+                    categoriesTableView(list, "Bottles");
+                    backBTN.setDisable(true);
+                    nextBTN.setDisable(true);
+                }
+                case "2 : Comments In Category" ->{
+                    List<Pair<String, Integer>> list;
+                    String period = PeriodBox.getValue().toLowerCase(Locale.ROOT);
+                    list = mongoManager.getVarietalsSummaryByComments(period);
+                    categoriesTableView(list, "Comments");
+                    backBTN.setDisable(true);
+                    nextBTN.setDisable(true);
+                }
+                case "3 : Likes In Category" ->{
+                    List<Pair<String, Integer>> list;
+                    list = neo4jManager.getVarietalsSummaryByLikes();
+                    categoriesTableView(list, "Likes");
+                    backBTN.setDisable(true);
+                    nextBTN.setDisable(true);
+                }
+
             }
         } else if (AnaCHECK.isSelected()) {
             if (ResearchType.getValue() == null) {
@@ -177,13 +225,13 @@ public class SuggestionController {
                 return;
             }
             switch (ResearchType.getValue()) {
+                // ANALYTICS
                 case "Most versatile users" -> {
-                    List<Pair<User, Integer>> users = mongoManager.getTopVersatileUsers(8*page, 8);
-                    System.out.println("ok" + users);
-                    fillUsers(users, "Categories saved");
+                    List<Pair<User, Integer>> users = mongoManager.getTopVersatileUsers(4*page, 4);
+                    fillUsers(users, "Num Varietal");
                 }
                 case "Most followed users" -> {
-                    List<Pair<User, Integer>> users = neo4jManager.getMostFollowedUsers(8*page, 8);
+                    List<Pair<User, Integer>> users = neo4jManager.getMostFollowedUsers(4*page, 4);
                     fillUsers(users, "Follower");
                 }
                 case "Most followed winerys" -> {
@@ -199,20 +247,45 @@ public class SuggestionController {
                     List<Pair<Wine, Integer>> wines = neo4jManager.getMostLikedWines(3*page, 3);
                     fillWines(wines, "Likes");
                 }
-
             }
         }
     }
 
+    private void categoriesTableView(List<Pair<String, Integer>> list, String value) {
+        cleanGrid();
+        TableView table = new TableView();
+        TableColumn firstColumn = new TableColumn("Categories");
+        firstColumn.setCellValueFactory(new PropertyValueFactory<>("key"));
+        TableColumn secondColumn = new TableColumn(value);
+        secondColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
+        table.getColumns().addAll(firstColumn, secondColumn);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.setMinHeight(400);
+
+        for(Pair<String, Integer> row : list) {
+            table.getItems().add(row);
+        }
+
+        cardsGrid.setAlignment(Pos.CENTER);
+        cardsGrid.setVgap(20);
+        cardsGrid.setPadding(new Insets(30,40,30,120));
+        ColumnConstraints constraints = new ColumnConstraints();
+        constraints.setPercentWidth(100);
+        cardsGrid.getColumnConstraints().add(constraints);
+
+        cardsGrid.add(table, 0, 0);
+    }
+
+
     private void fillUsers(List<Pair<User, Integer>> usersList, String label) {
         // set new layout
         setGridUsers();
-        if (usersList.size() != 8)
+        if (usersList.size() != 4 )
             nextBTN.setDisable(true);
         int row = 0;
         int col = 0;
         for (Pair<User, Integer> u : usersList) {
-            System.out.println(u.getKey() + " " + label + " " + u.getValue());
+            //System.out.println(u.getKey() + " " + label + " " + u.getValue());
             Pane card = loadUsersCard(u.getKey(), label, u.getValue());
             cardsGrid.add(card, col, row);
             col++;
@@ -223,11 +296,9 @@ public class SuggestionController {
         }
     }
 
-
-
     private void fillWinerys(List<Pair<String, Winery>> winerys) {
         setGridWine();
-        if (winerys.size() == 0)
+        if (winerys.size() != 4)
             nextBTN.setDisable(true);
 
         int row = 0;
@@ -263,7 +334,6 @@ public class SuggestionController {
         return pane;
     }
 
-
     private void cleanGrid() {
         cardsGrid.getColumnConstraints().clear();
         while (cardsGrid.getChildren().size() > 0) {
@@ -272,7 +342,7 @@ public class SuggestionController {
     }
 
     private void fillWines(List<Wine> WineList) {
-        if (WineList.size() == 0)
+        if (WineList.size() != 3)
             nextBTN.setDisable(true);
         setGridWine();
         int row = 0;
@@ -317,10 +387,9 @@ public class SuggestionController {
         cardsGrid.getColumnConstraints().add(constraints);
     }
 
-
     private void fillUsers(List<User> usersList) {
         setGridUsers();
-        if (usersList.size() != 8)
+        if (usersList.size() != 4)
             nextBTN.setDisable(true);
         int row = 0;
         int col = 0;
@@ -358,9 +427,7 @@ public class SuggestionController {
     private void goForward () {
         page++;
         backBTN.setDisable(false);
-        switch (special) {
-            default -> startResearch();
-        }
+        startResearch();
     }
 
     private void goBack () {
@@ -370,11 +437,8 @@ public class SuggestionController {
             backBTN.setDisable(true);
         }
         nextBTN.setDisable(false);
-        switch (special) {
-            default -> startResearch();
-        }
+        startResearch();
     }
-
 
         @FXML
     public void gotosearch(ActionEvent event) {
@@ -386,7 +450,7 @@ public class SuggestionController {
     @FXML
     public void gotosuggestion(ActionEvent event) {
         this.event = event;
-        utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/suggestion.fxml",event);
+        utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/specialSearch.fxml",event);
     }
 
     @FXML
@@ -405,7 +469,5 @@ public class SuggestionController {
         Session.resetInstance();
         utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/start.fxml",event);
     }
-
-
 }
 

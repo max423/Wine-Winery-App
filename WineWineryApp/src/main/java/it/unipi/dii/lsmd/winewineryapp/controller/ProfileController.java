@@ -1,5 +1,4 @@
 package it.unipi.dii.lsmd.winewineryapp.controller;
-
 import it.unipi.dii.lsmd.winewineryapp.model.*;
 import it.unipi.dii.lsmd.winewineryapp.persistence.MongoDBManager;
 import it.unipi.dii.lsmd.winewineryapp.persistence.MongoDriver;
@@ -16,7 +15,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-
 import java.util.*;
 
 
@@ -52,6 +50,13 @@ public class ProfileController {
     private Button AddWineryBTN;
     @FXML
     private Button BackBTN;
+    @FXML
+    private Button DeleteUserBTN;
+    @FXML
+    private Button ElectModBTN;
+    @FXML private Button ShowFollowerBTN;
+    @FXML private Button ShowFollowingBTN;
+    @FXML private Button myprofile_btn;
 
     private ActionEvent event;
 
@@ -63,13 +68,14 @@ public class ProfileController {
         EditBTN.setOnMouseClicked(mouseEvent -> clickEditBTN(mouseEvent));
         FollowBTN.setOnMouseClicked(mouseEvent -> clickFollowBTN(mouseEvent));
         BackBTN.setOnMouseClicked(mouseEvent -> clickBackBTN(mouseEvent));
-        //moderatorBtn.setOnMouseClicked(mouseEvent -> clickOnModeratorBtn(mouseEvent));
-        //deleteUserBtn.setOnMouseClicked(mouseEvent -> clickOnDeleteUserBtn(mouseEvent));
+        ElectModBTN.setOnMouseClicked(mouseEvent -> clickElectModBTN(mouseEvent));
+        DeleteUserBTN.setOnMouseClicked(mouseEvent -> clickDeleteUserBTN(mouseEvent));
+        ShowFollowerBTN.setOnMouseClicked(mouseEvent -> clickShowFollowingBTN(mouseEvent));
+        ShowFollowingBTN.setOnMouseClicked(mouseEvent -> clickShowFollowerBTN(mouseEvent));
     }
 
     public void setProfilePage(User user) {
         this.user = user;
-
         Session.getInstance().getPreviousPageUsers().add(user);
 
         username_side.setText(Session.getInstance().getLoggedUser().getUsername());
@@ -79,8 +85,8 @@ public class ProfileController {
         lastname.setText(user.getLastName());
         age.setText(String.valueOf(user.getAge()));
 
-        nFollower.setText(String.valueOf(neoMan.getNumFollowersUser(user.getUsername())));
-        nFollowing.setText(String.valueOf(neoMan.getNumFollowingUser(user.getUsername())));
+        nFollower.setText(String.valueOf(neoMan.getNumFollowingUser(user.getUsername())));
+        nFollowing.setText(String.valueOf(neoMan.getNumFollowedUser(user.getUsername())));
 
         int nWinerysaved = 0;
         if(user.getWinerys() != null)
@@ -100,23 +106,28 @@ public class ProfileController {
             AddWineryBTN.setVisible(false);
         }
 
-        /*//moderator
+        // admin
         if (Session.getInstance().getLoggedUser().getType() == 2 &&
                 !user.getUsername().equals(Session.getInstance().getLoggedUser().getUsername())) {
-            moderatorBtn.setVisible(true);
-            deleteUserBtn.setVisible(true);
+            ElectModBTN.setVisible(true);
+            DeleteUserBTN.setVisible(true);
 
             if (user.getType() == 1)
-                moderatorBtn.setText("Dismiss Moderator");
+                ElectModBTN.setText("Dismiss Moderator");
             else
-                moderatorBtn.setText("Elect Moderator");
+                ElectModBTN.setText("Elect Moderator");
         } else {
-            moderatorBtn.setVisible(false);
-            deleteUserBtn.setVisible(false);
-        }*/
+            ElectModBTN.setVisible(false);
+            DeleteUserBTN.setVisible(false);
+        }
+
         winerybox.getChildren().clear();
         LoadWinerys();
 
+        if (Session.getInstance().getLoggedUser().getType() == 2){
+            myprofile_btn.setVisible(false);
+            FollowBTN.setVisible(false);
+        }
     }
 
     private void LoadWinerys() {
@@ -136,7 +147,6 @@ public class ProfileController {
         } else {
             winerybox.getChildren().add(new Label("No Winery :("));
         }
-
     }
 
     private Pane loadWineryElement(Winery w, String owner) {
@@ -165,7 +175,7 @@ public class ProfileController {
         td.setHeaderText("Insert the title of the Winery");
         td.showAndWait();
 
-        // Add new Winery List to DB
+        // Add new Winery to DB
         boolean res = mongoMan.createWinery(Session.getInstance().getLoggedUser(), td.getEditor().getText());
         if (!res) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -182,7 +192,6 @@ public class ProfileController {
             alert.show();
             return;
         }
-
         // Refresh Page Content
         User refreshUser = Session.getInstance().getLoggedUser();
         refreshUser.getWinerys().add(new Winery(td.getEditor().getText(), new ArrayList<>()));
@@ -218,6 +227,8 @@ public class ProfileController {
             }
             return null;
         });
+
+
         Optional<User> optionalResult = dialog.showAndWait();
         optionalResult.ifPresent((User u) -> {
             if (!mongoMan.updateUser(u)) {
@@ -244,14 +255,12 @@ public class ProfileController {
         if (tmp.equals("Follow")) {
             neoMan.followUser(Session.getInstance().getLoggedUser().getUsername(), user.getUsername());
             FollowBTN.setText("Unfollow");
-
             // Update the n Follower label
             int newNumFollower = Integer.parseInt(nFollower.getText()) + 1;
             nFollower.setText(String.valueOf(newNumFollower));
         } else {
             neoMan.unfollowUser(Session.getInstance().getLoggedUser().getUsername(), user.getUsername());
             FollowBTN.setText("Follow");
-
             // Update the n Follower label
             int newNumFollower = Integer.parseInt(nFollower.getText()) - 1;
             nFollower.setText(String.valueOf(newNumFollower));
@@ -259,7 +268,7 @@ public class ProfileController {
 
     }
 
-    /*private void clickOnDeleteUserBtn(MouseEvent mouseEvent) {
+    private void clickDeleteUserBTN(MouseEvent mouseEvent) {
         if (!mongoMan.deleteUser(user)) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Error: An error occurred. Try again later :(");
             alert.showAndWait();
@@ -271,21 +280,20 @@ public class ProfileController {
             alert.showAndWait();
             return;
         }
-        utilitis.changeScene("/it/unipi/dii/lsmd/paperraterapp/layout/main.fxml", mouseEvent);
-    }*/
+        utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/main.fxml", mouseEvent);
+    }
 
-   /* private void clickOnModeratorBtn(MouseEvent mouseEvent) {
-        if (moderatorBtn.getText().equals("Elect Moderator")) {
-            moderatorBtn.setText("Dismiss Moderator");
+   private void clickElectModBTN(MouseEvent mouseEvent) {
+        if (ElectModBTN.getText().equals("Elect Moderator")) {
+            ElectModBTN.setText("Dismiss Moderator");
             user.setType(1);
         }
         else {
-            moderatorBtn.setText("Elect Moderator");
+            ElectModBTN.setText("Elect Moderator");
             user.setType(0);
         }
-
         mongoMan.updateUser(user);
-    }*/
+    }
 
     private void clickBackBTN(MouseEvent mouseEvent) {
         // Pop
@@ -300,6 +308,71 @@ public class ProfileController {
             ctrl.setWinePage(Session.getInstance().getPreviousPageWines().remove(
                     Session.getInstance().getPreviousPageWines().size() - 1));
         }
+    }
+
+    private void clickShowFollowerBTN(MouseEvent mouseEvent){
+        List<User> followers = neoMan.getSnapsOfFollowedUser(user);
+        if(followers.isEmpty()){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText("No followers");
+            alert.show();
+            return;
+        }
+        Dialog<User> dialog = new Dialog<>();
+        dialog.setTitle("Followers");
+        dialog.setHeaderText("List of followers");
+
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.setPrefWidth(300);
+        dialogPane.getButtonTypes().addAll(ButtonType.OK);
+        VBox vBox = new VBox();
+        for(User u : followers){
+            Label l = new Label(u.getUsername());
+            vBox.getChildren().add(l);
+
+            // se clicca sul utente deve aprire la sua pagina profilo
+            l.setOnMouseClicked(mouseEvent1 -> {
+                ProfileController ctrl = (ProfileController) utilitis.changeScene(
+                        "/it/unipi/dii/lsmd/winewineryapp/layout/profile.fxml", mouseEvent);
+                ctrl.setProfilePage(mongoMan.getUserByUsername(u.getUsername()));
+                dialog.close();
+            });
+        }
+        dialogPane.setContent(vBox);
+        dialog.showAndWait();
+    }
+
+    private void clickShowFollowingBTN(MouseEvent mouseEvent){
+        List<User> following = neoMan.getSnapsOfFollowingUser(user);
+        if(following.isEmpty()){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText("No following");
+            alert.show();
+            return;
+        }
+        Dialog<User> dialog = new Dialog<>();
+        dialog.setTitle("Following");
+        dialog.setHeaderText("List of following");
+
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.setPrefWidth(300);
+        dialogPane.getButtonTypes().addAll(ButtonType.OK);
+        VBox vBox = new VBox();
+
+        for(User u : following){
+            Label l = new Label(u.getUsername());
+            vBox.getChildren().add(l);
+
+            // se clicca sul utente deve aprire la sua pagina profilo
+            l.setOnMouseClicked(mouseEvent1 -> {
+                ProfileController ctrl = (ProfileController) utilitis.changeScene(
+                        "/it/unipi/dii/lsmd/winewineryapp/layout/profile.fxml", mouseEvent);
+                ctrl.setProfilePage(mongoMan.getUserByUsername(u.getUsername()));
+                dialog.close();
+            });
+        }
+        dialogPane.setContent(vBox);
+        dialog.showAndWait();
     }
 
     @FXML
@@ -328,8 +401,7 @@ public class ProfileController {
     @FXML
     public void gotosuggestion(ActionEvent event) {
         this.event = event;
-        ProfileController ctrl = (ProfileController) utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/suggestion.fxml",event);
-        ctrl.setProfilePage(Session.getInstance().getLoggedUser());
+        utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/specialSearch.fxml",event);
     }
 }
 

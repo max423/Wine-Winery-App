@@ -12,6 +12,7 @@ import it.unipi.dii.lsmd.winewineryapp.utils.utilitis;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextInputDialog;
@@ -21,7 +22,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Objects;
@@ -52,13 +52,11 @@ public class CommentController {
         username.setOnMouseClicked(mouseEvent -> clickUsername(mouseEvent));
     }
 
-    public void setCommentCard (Comment cmt, Wine wine, boolean browser) {
+    public void setCommentCard (Comment cmt, Wine wine) {
         this.comment = cmt;
         this.wine = wine;
-        if (browser)
-            deleteBTN.setOnMouseClicked(mouseEvent -> clickOnBinBrowser(mouseEvent));
-        else
-            deleteBTN.setOnMouseClicked(mouseEvent -> clickOnBin(mouseEvent));
+
+        deleteBTN.setOnMouseClicked(mouseEvent -> clickOnBin(mouseEvent));
 
         if(Objects.equals(Session.getInstance().getLoggedUser().getUsername(), comment.getUsername())) {
             deleteBTN.setVisible(true);
@@ -79,18 +77,37 @@ public class CommentController {
         usercomment.setText(comment.getText());
     }
     private void clickOnBin (MouseEvent mouseEvent) {
-        mongoMan.deleteComment(wine, comment);
-        ((VBox) commentBox.getParent()).getChildren().remove(commentBox);
-        int numComm = Integer.parseInt(getText());
-        numComm--;
-        setText(String.valueOf(numComm));
+        Boolean ok = true;
+
+        if (!mongoMan.deleteRecentComment(wine, comment)) {
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("Database not available!");
+            alert.showAndWait();
+            ok = false;
+        }
+
+        if (!mongoMan.deleteTotalComment(wine, comment)) {
+            mongoMan.addRecentComment(wine, comment);
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("Database not available!");
+            alert.showAndWait();
+            ok = false;
+        }
+
+        if (ok.equals(true)) {
+            ((VBox) commentBox.getParent()).getChildren().remove(commentBox);
+            int numComm = Integer.parseInt(getText());
+            numComm--;
+            setText(String.valueOf(numComm));
+        }
     }
 
-    private void clickOnBinBrowser (MouseEvent mouseEvent) {
-        wine = mongoMan.getWineById(wine);
-        mongoMan.deleteComment(wine, comment);
-        ((GridPane) commentBox.getParent()).getChildren().remove(commentBox);
-    }
 
     public StringProperty textProperty() {
         return text ;
@@ -109,9 +126,29 @@ public class CommentController {
         dialog.setTitle("Edit comment");
         Optional<String> result = dialog.showAndWait();
         usercomment.setText(result.get());
+        Comment previousComment = comment;
+
         comment.setText(result.get());
         if (result.isPresent()){
-            mongoMan.updateComment(wine, comment);
+
+            if (!mongoMan.updateComment(wine, comment)) {
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Information Dialog");
+                alert.setHeaderText(null);
+                alert.setContentText("Database not available!");
+                alert.showAndWait();
+            }
+
+            if (!mongoMan.updateTotalComments(wine, comment)) {
+                mongoMan.updateComment(wine, previousComment);
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Information Dialog");
+                alert.setHeaderText(null);
+                alert.setContentText("Database not available!");
+                alert.showAndWait();
+            }
         }
     }
 

@@ -25,7 +25,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="833.0" prefWidth="1516.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.lsmd.winewineryapp.controller.SuggestionController">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="833.0" prefWidth="1516.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.lsmd.winewineryapp.controller.SpecialSearchController">
         <children>
                 <AnchorPane fx:id="main_form" maxHeight="891.0" maxWidth="1682.0" minHeight="800.0" minWidth="1500.0" prefHeight="891.0" prefWidth="1682.0">
                         <children>
@@ -248,21 +248,21 @@
                                                                         <top>
                                                                                 <HBox prefHeight="60.0" prefWidth="1313.0" BorderPane.alignment="CENTER">
                                                                                         <children>
-                                    <Pane prefHeight="60.0" prefWidth="121.0" />
-                                    <VBox prefHeight="200.0" prefWidth="100.0">
-                                       <children>
-                                          <CheckBox fx:id="SugCHECK" mnemonicParsing="false" onAction="#handleCheckBoxAction" prefHeight="18.0" prefWidth="95.0" text="Suggestion" />
-                                          <CheckBox fx:id="AnaCHECK" mnemonicParsing="false" onAction="#handleCheckBoxAction" text="Analitycs">
-                                             <VBox.margin>
-                                                <Insets top="5.0" />
-                                             </VBox.margin>
-                                          </CheckBox>
-                                       </children>
-                                       <HBox.margin>
-                                          <Insets left="20.0" top="10.0" />
-                                       </HBox.margin>
-                                    </VBox>
-                                    <Pane prefHeight="60.0" prefWidth="121.0" />
+                                                                                                <Pane prefHeight="60.0" prefWidth="121.0" />
+                                                                                                <VBox prefHeight="200.0" prefWidth="100.0">
+                                                                                                        <children>
+                                                                                                                <CheckBox fx:id="SugCHECK" mnemonicParsing="false" onAction="#handleCheckBoxAction" prefHeight="18.0" prefWidth="95.0" text="Suggestion" />
+                                                                                                                <CheckBox fx:id="AnaCHECK" mnemonicParsing="false" onAction="#handleCheckBoxAction" text="Analitycs">
+                                                                                                                        <VBox.margin>
+                                                                                                                                <Insets top="5.0" />
+                                                                                                                        </VBox.margin>
+                                                                                                                </CheckBox>
+                                                                                                        </children>
+                                                                                                        <HBox.margin>
+                                                                                                                <Insets left="20.0" top="10.0" />
+                                                                                                        </HBox.margin>
+                                                                                                </VBox>
+                                                                                                <Pane prefHeight="60.0" prefWidth="121.0" />
                                                                                                 <VBox prefHeight="60.0" prefWidth="269.0">
                                                                                                         <children>
                                                                                                                 <ComboBox fx:id="ResearchType" onAction="#switchSearch" prefHeight="39.0" prefWidth="238.0" promptText="Choose Option" styleClass="transparent" visible="false">
@@ -275,23 +275,23 @@
                                                                                                                 <Insets left="30.0" />
                                                                                                         </HBox.margin>
                                                                                                 </VBox>
-                                                                                                <VBox prefHeight="60.0" prefWidth="126.0">
-                                       <children>
-                                          <ComboBox fx:id="PeriodBox" prefHeight="40.0" prefWidth="126.0" promptText="Choose Period">
-                                             <opaqueInsets>
-                                                <Insets />
-                                             </opaqueInsets>
-                                             <VBox.margin>
-                                                <Insets top="10.0" />
-                                             </VBox.margin>
-                                          </ComboBox>
-                                       </children>
-                                       <opaqueInsets>
-                                          <Insets />
-                                       </opaqueInsets>
-                                       <HBox.margin>
-                                          <Insets right="40.0" />
-                                       </HBox.margin></VBox>
+                                                                                                <VBox  prefHeight="60.0" prefWidth="126.0">
+                                                                                                        <children>
+                                                                                                                <ComboBox fx:id="PeriodBox" prefHeight="40.0" prefWidth="126.0" promptText="Choose Period">
+                                                                                                                        <opaqueInsets>
+                                                                                                                                <Insets />
+                                                                                                                        </opaqueInsets>
+                                                                                                                        <VBox.margin>
+                                                                                                                                <Insets top="10.0" />
+                                                                                                                        </VBox.margin>
+                                                                                                                </ComboBox>
+                                                                                                        </children>
+                                                                                                        <opaqueInsets>
+                                                                                                                <Insets />
+                                                                                                        </opaqueInsets>
+                                                                                                        <HBox.margin>
+                                                                                                                <Insets right="40.0" />
+                                                                                                        </HBox.margin></VBox>
                                                                                                 <Button fx:id="searchBTN" disable="true" onAction="#startResearch" prefHeight="40.0" prefWidth="220.0" text="View">
                                                                                                         <styleClass>
                                                                                                                 <String fx:value="clear-btn" />

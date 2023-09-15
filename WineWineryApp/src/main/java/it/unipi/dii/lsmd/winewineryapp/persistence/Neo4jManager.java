@@ -22,7 +22,7 @@ public class Neo4jManager {
     }
 
     /**
-     * Function that add the info of a new user to GraphDB
+     * add the info of a new user to GraphDB
      * @param u new User
      */
     public boolean addUser(User u) {
@@ -42,29 +42,46 @@ public class Neo4jManager {
         return res;
     }
 
-
-    public int getNumFollowersUser(final String username) {
+    /**
+     * return the number of followed user
+     * @param username of the user
+     * @return number of followed user
+     */
+    public int getNumFollowedUser(final String username) {
         int numFollowers;
         try (Session session = driver.session()) {
             numFollowers = session.writeTransaction((TransactionWork<Integer>) tx -> {
-                Result result = tx.run("MATCH (:User {username: $username})<-[r:FOLLOWS]-() " +
+                Result result = tx.run("MATCH (:User {username: $username})-[r:FOLLOWS]->(u:User) " +
                         "RETURN COUNT(r) AS numFollowers", parameters("username", username));
                 return result.next().get("numFollowers").asInt();
             });
         }
         return numFollowers;
     }
+
+    /**
+     * return the number of followers
+     * @param username of the user
+     * @return number of followers
+     */
     public int getNumFollowingUser(final String username) {
         int numFollowers;
         try (Session session = driver.session()) {
             numFollowers = session.writeTransaction((TransactionWork<Integer>) tx -> {
-                Result result = tx.run("MATCH (:User {username: $username})-[r:FOLLOWS]->() " +
+                Result result = tx.run("MATCH (:User {username: $username})<-[r:FOLLOWS]-(u:User) " +
                         "RETURN COUNT(r) AS numFollowers", parameters("username", username));
                 return result.next().get("numFollowers").asInt();
             });
         }
         return numFollowers;
     }
+
+    /**
+     * check if user a follows user b
+     * @param userA username of user a
+     * @param userB username of user b
+     * @return result of the check
+     */
     public boolean userAFollowsUserB (String userA, String userB) {
         boolean res = false;
         try(Session session = driver.session()) {
@@ -84,6 +101,12 @@ public class Neo4jManager {
         return res;
     }
 
+    /**
+     * create a new winery
+     * @param title name of the winery
+     * @param owner username of the owner
+     * @return result of the function
+     */
     public boolean createWinery (final String title, final String owner) {
         try (Session session = driver.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -98,6 +121,12 @@ public class Neo4jManager {
         }
         return true;
     }
+
+    /**
+     * update info of a user
+     * @param u info of the user
+     * @return result of the function
+     */
     public boolean updateUser(User u) {
         try(Session session = driver.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -113,6 +142,11 @@ public class Neo4jManager {
         }
     }
 
+    /**
+     * add a new follows relationship
+     * @param username username of the user
+     * @param target user to be followed
+     */
     public void followUser (final String username, final String target) {
         try (Session session = driver.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -125,6 +159,11 @@ public class Neo4jManager {
         }
     }
 
+    /**
+     * remove a follows relationship
+     * @param username username of the user
+     * @param target user to be unfollowed
+     */
     public void unfollowUser (final String username, final String target) {
         try (Session session = driver.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -136,6 +175,12 @@ public class Neo4jManager {
         }
     }
 
+    /**
+     * get the number of followers of a winery
+     * @param title name of the winery
+     * @param owner owner of the winery
+     * @return number of followers
+     */
     public int getNumFollowersWinery(final String title, final String owner) {
         int numFollowers;
         try (Session session = driver.session()) {
@@ -148,6 +193,13 @@ public class Neo4jManager {
         return numFollowers;
     }
 
+    /**
+     * check if a user is following a winery
+     * @param user username of the user
+     * @param owner owner of the winery
+     * @param winery info of the winery
+     * @return result of the check
+     */
     public boolean isUserFollowingWinery (String user, String owner, Winery winery) {
         boolean res = false;
         try(Session session = driver.session()) {
@@ -167,9 +219,12 @@ public class Neo4jManager {
         return res;
     }
 
-
-
-
+    /**
+     * add a follows relationship between a user and a winery
+     * @param title name of the winery
+     * @param owner owner of the winery
+     * @param username username of the user
+     */
     public void followWinery (final String title, final String owner, final String username) {
         try (Session session = driver.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -182,6 +237,12 @@ public class Neo4jManager {
         }
     }
 
+    /**
+     * delete a follows relationship
+     * @param title name of the winery
+     * @param owner owner of the winery
+     * @param username username of the user
+     */
     public void unfollowWinery (final String title, final String owner, final String username) {
         try (Session session = driver.session()){
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -193,6 +254,12 @@ public class Neo4jManager {
         }
     }
 
+    /**
+     * delete a winery
+     * @param title name of the winery
+     * @param owner owner of the winery
+     * @return result of the function
+     */
     public boolean deleteWinery (final String title, final String owner) {
         boolean res = false;
         try (Session session = driver.session()){
@@ -210,11 +277,17 @@ public class Neo4jManager {
         return res;
     }
 
+    /**
+     * check if exist a likes relationship between a user and a wine
+     * @param user username of the user
+     * @param wine info of the wine
+     * @return result of the function
+     */
     public boolean userLikeWine (String user, Wine wine){
         boolean res = false;
         try(Session session = driver.session()){
             res = session.readTransaction((TransactionWork<Boolean>) tx -> {
-                Result r = tx.run("MATCH (:User{username:$user})-[r:LIKES]->(w:Wine) WHERE (w.vivino_id = $vivino_id AND w.glugulp_id =$glugulp_id) " +
+                Result r = tx.run("MATCH (:User{username:$user})-[r:LIKES]->(w:Wine) WHERE (w.vivino_id = $vivino_id OR w.glugulp_id =$glugulp_id) " +
                         "RETURN COUNT(*)", parameters("user", user, "vivino_id", wine.getVivino_id(), "glugulp_id", wine.getGlugulp_id()));
                 Record record = r.next();
                 if (record.get(0).asInt() == 0)
@@ -229,6 +302,11 @@ public class Neo4jManager {
         return res;
     }
 
+    /**
+     * get the number of likes of a wine
+     * @param wine info of the wine
+     * @return number of likes
+     */
     public int getNumLikes(final Wine wine) {
         int numLikes;
         try (Session session = driver.session()) {
@@ -241,6 +319,11 @@ public class Neo4jManager {
         return numLikes;
     }
 
+    /**
+     * add a likes relationship between a user and a wine
+     * @param u info of the user
+     * @param w info of the wine
+     */
     public void like(User u, Wine w) {
         try(Session session = driver.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -258,6 +341,12 @@ public class Neo4jManager {
         }
     }
 
+    /**
+     * remove a likes relationship between a user and a wine
+     * @param u info of the user
+     * @param w info of the wine
+     * @return result of the function
+     */
     public boolean unlike(User u, Wine w) {
         try (Session session = driver.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -279,16 +368,13 @@ public class Neo4jManager {
 
 
     /**
-     * Function that returns a list of suggested users snapshots for the logged user.
-     * Suggestions are based on most followed users who are 2 FOLLOWS hops far from the
-     * logged user (first level);
-     * The second level of suggestion returns most followed users that have likes in common with
-     * the logged user.
-     *
-     * @param u user who need suggestions
+     * Returns a list of suggested users snapshots
+     * first level: most followed users who are 2 FOLLOWS hops far from the logged user
+     * second level: most followed users that have likes in common with the logged user
+     * @param u info of the user
      * @param numberFirstLv how many users suggest from first level suggestion
      * @param numberSecondLv how many users suggest from second level
-     * @return A list of suggested users snapshots
+     * @return A list of suggested users
      */
     public List<User> getSnapsOfSuggestedUsers(User u, int numberFirstLv, int numberSecondLv, int skipFirstLv, int skipSecondLv) {
         List<User> usersSnap = new ArrayList<>();
@@ -327,15 +413,13 @@ public class Neo4jManager {
     }
 
     /**
-     * Function that returns a list of suggested wineries snapshots for the logged user.
-     * Suggestions are based on most followed wineries followed by followed users (first level)
-     * and most followed wineries followed by users that are 2 FOLLOWS hops far from the
-     * logged user (second level).
-     *
-     * @param u Logged User
-     * @param numberFirstLv how many wineries suggest from first level
+     * Returns a list of suggested wineries snapshots
+     * first level: most followed wineries followed by followed users
+     * second level: most followed wineries followed by users that are 2 FOLLOWS hops far from the logged user
+     * @param u info of the user
+     * @param numberFirstLv how many wineries suggest from first level suggestion
      * @param numberSecondLv how many wineries suggest from second level
-     * @return A list of suggested wineries snapshots
+     * @return A list of suggested wineries
      */
     public List<Pair<String, Winery>> getSnapsOfSuggestedWinerys(User u, int numberFirstLv, int numberSecondLv, int skipFirstLv, int skipSecondLv){
         List<Pair<String, Winery>> winerysSnap = new ArrayList<>();
@@ -376,16 +460,14 @@ public class Neo4jManager {
 
 
     /**
-     * Function that returns a list of suggested wines snapshots for the logged user.
-     * Suggestions are based on wines liked by followed users (first level) and likes liked by users
-     * that are 2 FOLLOWS hops far from the logged user (second level).
-     * Wines returned are ordered by the number of times they appeared in the results, so wines
-     * that appear more are most likely to be similar to the interests of the logged user.
-     *
+     * Returns a list of suggested wines snapshots
+     * first level: wines liked by followed users
+     * second level: likes liked by users that are 2 FOLLOWS hops far from the logged user
+     * Wines returned are ordered by the number of times they appeared in the results
      * @param u Logged User
      * @param numberFirstLv how many wines suggest from first level
      * @param numberSecondLv how many wines suggest from second level
-     * @return A list of suggested wines snapshots
+     * @return A list of suggested wines
      */
     public List<Wine> getSnapsOfSuggestedWines(User u, int numberFirstLv, int numberSecondLv, int skipFirstLv, int skipSecondLv) {
         List<Wine> winesSnap = new ArrayList<>();
@@ -394,8 +476,7 @@ public class Neo4jManager {
                 Result result = tx.run("MATCH (target:Wine)<-[r:LIKES]-(u:User)<-[:FOLLOWS]-(me:User{username:$username}) " +
                                 "WHERE NOT EXISTS((me)-[:LIKES]->(target)) " +
                                 "RETURN target.vivino_id AS VivinoId, target.glugulp_id AS GlugulpId, target.name as Name, " +
-                                "target.winemaker AS Winemaker, target.country AS Country, target.varietal AS Varietal, " +
-                                "target.grapes AS Grapes, target.year AS Year, target.price AS Price, COUNT(*) AS nOccurences " +
+                                "target.winemaker AS Winemaker, target.varietal AS Varietal, COUNT(*) AS nOccurences " +
                                 "ORDER BY nOccurences DESC, Name " +
                                 "SKIP $skipFirstLevel " +
                                 "LIMIT $firstlevel " +
@@ -403,8 +484,7 @@ public class Neo4jManager {
                                 "MATCH (target:Wine)<-[r:LIKES]-(u:User)<-[:FOLLOWS*2..2]-(me:User{username:$username}) " +
                                 "WHERE NOT EXISTS((me)-[:LIKES]->(target)) " +
                                 "RETURN target.vivino_id AS VivinoId, target.glugulp_id AS GlugulpId, target.name as Name, " +
-                                "target.winemaker AS Winemaker, target.country AS Country, target.varietal AS Varietal, " +
-                                "target.grapes AS Grapes, target.year AS Year, target.price AS Price, COUNT(*) AS nOccurences " +
+                                "target.winemaker AS Winemaker, target.varietal AS Varietal, COUNT(*) AS nOccurences " +
                                 "ORDER BY nOccurences DESC, Name " +
                                 "SKIP $skipSecondLevel " +
                                 "LIMIT $secondLevel",
@@ -424,11 +504,11 @@ public class Neo4jManager {
                             glugulp_id,
                             r.get("Name").asString(),
                             r.get("Winemaker").asString(),
-                            r.get("Country").asString(),
+                            "",
                             r.get("Varietal").asString(),
-                            r.get("Grapes").asString(),
-                            r.get("Year").asInt(),
-                            r.get("Price").asDouble(),
+                            "",
+                            -1,
+                            -1,
                             "",
                             "",
                             new ArrayList<>());
@@ -444,10 +524,8 @@ public class Neo4jManager {
         return winesSnap;
     }
 
-
-
     /**
-     * Return a hashmap with the most popular user
+     * Return most followed users
      * @param num num of rank
      * @return pair (name, numFollower)
      */
@@ -477,7 +555,7 @@ public class Neo4jManager {
     }
 
     /**
-     * Return a hashmap with the most popular Winery
+     * Return most followed wineries
      * @param num num of rank
      * @return pair (name, numFollower)
      */
@@ -508,7 +586,7 @@ public class Neo4jManager {
 
 
     /**
-     * Method that returns wines with the highest number of likes
+     * Returns wines with the highest number of likes
      * @param limit
      * @return List of Wines
      */
@@ -519,8 +597,8 @@ public class Neo4jManager {
             session.readTransaction(tx -> {
                 Result result = tx.run("MATCH (:User)-[l:LIKES]->(w:Wine) " +
                                 "RETURN w.vivino_id AS VivinoId, w.glugulp_id AS GlugulpId, w.name AS Name, " +
-                                "w.winemaker AS Winemaker, w.country AS Country, " +
-                                "w.varietal AS Varietal, w.grapes AS Grapes, w.year AS Year, w.price AS Price, " +
+                                "w.winemaker AS Winemaker, " +
+                                "w.varietal AS Varietal, " +
                                 "COUNT(l) AS like_count " +
                                 "ORDER BY like_count DESC, Name " +
                                 "SKIP $skip " +
@@ -542,11 +620,11 @@ public class Neo4jManager {
                             glugulp_id,
                             r.get("Name").asString(),
                             r.get("Winemaker").asString(),
-                            r.get("Country").asString(),
+                            "",
                             r.get("Varietal").asString(),
-                            r.get("Grapes").asString(),
-                            r.get("Year").asInt(),
-                            r.get("Price").asDouble(),
+                            "",
+                            -1,
+                            -1,
                             "",
                             "",
                             new ArrayList<>());
@@ -561,6 +639,103 @@ public class Neo4jManager {
             e.printStackTrace();
         }
         return topWines;
+    }
+
+
+    /**
+     * Delete a User from the GraphDB
+     * @param u info of the user
+     * @return result of the function
+     */
+    public boolean deleteUser(User u) {
+        try(Session session = driver.session()) {
+            session.writeTransaction((TransactionWork<Void>) tx -> {
+                tx.run("MATCH (u:User) WHERE u.username = $username DETACH DELETE u",
+                        parameters("username", u.getUsername()));
+                return null;
+            });
+            return true;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Returns varietals with the highest number of likes
+     * @return list of varietals and the number of likes
+     */
+    public List<Pair<String, Integer>> getVarietalsSummaryByLikes() {
+        List<Pair<String, Integer>> results = new ArrayList<>();
+        try(Session session = driver.session()) {
+            session.readTransaction(tx -> {
+                Result result = tx.run( "MATCH (w:Wine)<-[l:LIKES]-(:User) " +
+                        "RETURN count(l) AS nLikes, w.varietal AS Varietal " +
+                        "ORDER BY nLikes DESC");
+
+                while(result.hasNext()){
+                    Record r = result.next();
+                    results.add(new Pair(r.get("Varietal").asString(), r.get("nLikes").asInt()));
+                }
+                return null;
+            });
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return results;
+    }
+
+    /**
+     * Returns the users followed by a User
+     * @param u info of the user
+     * @return list of followed users
+     */
+    public List<User> getSnapsOfFollowedUser (User u) {
+        List<User> followedUsers;
+        try (Session session = driver.session()) {
+            followedUsers = session.writeTransaction((TransactionWork<List<User>>) tx -> {
+                Result result = tx.run("MATCH (:User {username: $username})-[:FOLLOWS]->(u:User) " +
+                                "RETURN u.username AS Username, u.email AS Email ORDER BY Username DESC " ,
+                        parameters("username", u.getUsername()));
+                List<User> followedList = new ArrayList<>();
+                while(result.hasNext()) {
+                    Record record = result.next();
+                    User snap = new User(record.get("Username").asString(), record.get("Email").asString(),
+                            "","","",-1,"", new ArrayList<>(), 0);
+                    followedList.add(snap);
+                }
+                return followedList;
+            });
+        }
+        return followedUsers;
+    }
+
+    /**
+     * Returns the following users
+     * @param u info of the user
+     * @return list of following users
+     */
+    public List<User> getSnapsOfFollowingUser (User u) {
+        List<User> followingUsers;
+        try (Session session = driver.session()) {
+            followingUsers = session.writeTransaction((TransactionWork<List<User>>) tx -> {
+                Result result = tx.run("MATCH (:User {username: $username})<-[:FOLLOWS]-(u:User) " +
+                                "RETURN u.username AS Username, u.email AS Email ORDER BY Username DESC " ,
+                        parameters("username", u.getUsername()));
+                List<User> followingList = new ArrayList<>();
+                while(result.hasNext()) {
+                    Record record = result.next();
+                    User snap = new User(record.get("Username").asString(), record.get("Email").asString(),
+                            "","","",-1,"", new ArrayList<>(), 0);
+                    followingList.add(snap);
+                }
+                return followingList;
+            });
+        }
+        return followingUsers;
     }
 
 }

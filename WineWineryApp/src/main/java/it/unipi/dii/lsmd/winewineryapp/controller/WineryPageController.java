@@ -32,8 +32,7 @@ public class WineryPageController {
     private String owner;
     private MongoDBManager mongoMan;
     private Neo4jManager neoMan;
-
-
+    private ActionEvent event;
     @FXML private Label username_side;
     @FXML private Label wineryName;
     @FXML private Label wineryOwner;
@@ -45,8 +44,8 @@ public class WineryPageController {
     @FXML private Button delateWineryBTN;
     @FXML private Button followBTN;
     @FXML private Button backBTN;
+    @FXML private Button gotomyprofile;
 
-    private ActionEvent event;
 
     public void initialize () {
         mongoMan = new MongoDBManager(MongoDriver.getInstance().openConnection());
@@ -105,6 +104,11 @@ public class WineryPageController {
 
         if (neoMan.isUserFollowingWinery(Session.getInstance().getLoggedUser().getUsername(), owner, winery))
             followBTN.setText("Unfollow");
+
+        if (Session.getInstance().getLoggedUser().getType() == 2) {
+            gotomyprofile.setVisible(false);
+            followBTN.setVisible(false);
+        }
     }
 
     private Pane loadWineElement (Wine w) {
@@ -126,7 +130,7 @@ public class WineryPageController {
         String tmp = followBTN.getText();
         if (tmp.equals("Follow")) {
             neoMan.followWinery(winery.getTitle(), owner, Session.getInstance().getLoggedUser().getUsername());
-            System.out.println("TEST// FOLLOW WINERY: "+winery.getTitle() + " " + owner + " " + Session.getInstance().getLoggedUser().getUsername() );
+            //System.out.println("TEST// FOLLOW WINERY: "+winery.getTitle() + " " + owner + " " + Session.getInstance().getLoggedUser().getUsername() );
             numFollowers.setText(String.valueOf(neoMan.getNumFollowersWinery(winery.getTitle(), owner)));
             followBTN.setText("Unfollow");
         }
@@ -191,7 +195,6 @@ public class WineryPageController {
             if (max == null || e.getValue() > max.getValue())
                 max = e;
         }
-
         return max.getKey();
     }
 
@@ -204,8 +207,7 @@ public class WineryPageController {
     @FXML
     public void gotosuggestion(ActionEvent event) {
         this.event = event;
-        ProfileController ctrl = (ProfileController) utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/suggestion.fxml",event);
-        ctrl.setProfilePage(Session.getInstance().getLoggedUser());
+        utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/specialSearch.fxml",event);
     }
 
     @FXML

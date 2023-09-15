@@ -1,4 +1,5 @@
 package it.unipi.dii.lsmd.winewineryapp.utils;
+import it.unipi.dii.lsmd.winewineryapp.Main;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
@@ -30,7 +31,6 @@ public class utilitis {
 
     static public void goBackToStart(ActionEvent event){
         changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/start.fxm",event);
-        //changeScene(last,event);
     }
 
     /**

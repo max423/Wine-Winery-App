@@ -22,7 +22,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.util.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +31,6 @@ public class MainMenuController  {
     private Neo4jManager neo4jManager;
     private User user;
     private int page;
-    private int special;
 
     @FXML private Label username_side;
     @FXML private ComboBox<String> ResearchType;
@@ -55,8 +53,7 @@ public class MainMenuController  {
     @FXML private GridPane cardsGrid;
     @FXML private Label errorTf;
     @FXML private HBox WineParameters;
-
-
+    @FXML private Button gotomyprofile;
 
     public void initialize () {
         mongoManager = new MongoDBManager(MongoDriver.getInstance().openConnection());
@@ -64,57 +61,42 @@ public class MainMenuController  {
         user = Session.getInstance().getLoggedUser();
         username_side.setText(user.getUsername());
         initSearch();
-        special = 0;
 
         nextBTN.setOnMouseClicked(mouseEvent -> goForward());
         backBTN.setOnMouseClicked(mouseEvent -> goBack());
-
+        if (Session.getInstance().getLoggedUser().getType() == 2)
+            gotomyprofile.setVisible(false);
     }
-
 
     @FXML
     void switchSearch() {
         searchBTN.setDisable(false);
         backBTN.setDisable(true);
         nextBTN.setDisable(true);
-        special = 0;
-        switch (ResearchType.getValue()) {
-            case "Wines" -> {
-                WineParameters.setVisible(true);
-                /*authorContainer.setVisible(true);
-                dateContainer.setVisible(true);
-                keywordContainer.setVisible(true);
-                categoryContainer.setVisible(true);
-                followsContainer.setVisible(false);*/
-            }
-            case "Users" -> {
-                WineParameters.setVisible(false);
-                /*authorContainer.setVisible(false);
-                dateContainer.setVisible(false);
-                keywordContainer.setVisible(false);
-                categoryContainer.setVisible(false);
-                followsContainer.setVisible(true);*/
-            }
-            case "Winerys" -> {
-                WineParameters.setVisible(false);
-            }
-        }
+
+        if (ResearchType.getValue().equals("Wines"))
+            WineParameters.setVisible(true);
+        else
+            WineParameters.setVisible(false);
     }
 
     // inizializza la ricerca
     private void initSearch() {
         page = 0;
         searchBTN.setDisable(true);
+
         // load type
         List<String> typeList = new ArrayList<>();
-        typeList.add("Wines");
-        typeList.add("Users");
-        typeList.add("Winerys");
-//        if (user.getType() > 0)
-//            typeList.add("Moderate comments");
-        if (user.getType() == 2) {
-            typeList.add("Search moderator");
+
+        if (user.getType() == 2) {  // admin
+            typeList.add("Users");
+            typeList.add("Moderators");
             typeList.add("Bad Users");
+        }
+        else {      // user + moderatore
+            typeList.add("Wines");
+            typeList.add("Users");
+            typeList.add("Winerys");
         }
         ObservableList<String> observableListType = FXCollections.observableList(typeList);
         ResearchType.getItems().clear();
@@ -135,15 +117,13 @@ public class MainMenuController  {
         nextBTN.setDisable(false);
         backBTN.setDisable(true);
         page = 0;
-        special = 0;
-        //specialSearchBt.setDisable(true);
         handleResearch();
     }
 
     private void handleResearch() {
-        System.out.println("handleResearch");
-        System.out.println(ResearchType.getValue());
-        //special = 0;
+        //System.out.println("handleResearch");
+        //System.out.println(ResearchType.getValue());
+
         switch (ResearchType.getValue()) {
             case "Wines" -> {
                 // check the form values
@@ -193,12 +173,10 @@ public class MainMenuController  {
                 // load wine
                 List<Wine> WineList = mongoManager.searchWinesByParameters(keywordTf.getText(),winemaker,country,varietal,grapes,startYear.intValue(),endYear.intValue(),startPrice,endPrice,page*3,3);
                 // parametri della ricerca
-                System.out.println("keyword: " + keywordTf.getText() + " winemaker: " + winemaker + " country: " + country + " varietal: " + varietal + " grapes: " + grapes + " startYear: " + startYear.intValue() + " endYear: " + endYear.intValue() + " startPrice: " + startPrice + " endPrice: " + endPrice);
+                //System.out.println("keyword: " + keywordTf.getText() + " winemaker: " + winemaker + " country: " + country + " varietal: " + varietal + " grapes: " + grapes + " startYear: " + startYear.intValue() + " endYear: " + endYear.intValue() + " startPrice: " + startPrice + " endPrice: " + endPrice);
                 // risultato
-                System.out.println("WineList: " + WineList.size());
-
+                //System.out.println("WineList: " + WineList.size());
                 fillWines(WineList);
-
             }
             case "Users" -> {
                 errorTf.setText("");
@@ -218,8 +196,16 @@ public class MainMenuController  {
                     return;
                 }
                 List<Pair<String, Winery>> winerys;
-                winerys = mongoManager.getWineryByKeyword(keywordTf.getText(), 4*page, 4);
+                winerys = mongoManager.getWineryByKeyword(keywordTf.getText(), 4 * page, 4);
                 fillWinerys(winerys);
+            }
+            case "Moderators"->{    // ADMIN
+                List<User> usersList = mongoManager.getUsersByKeyword(keywordTf.getText(), true, page);
+                fillUsers(usersList);
+            }
+            case "Bad Users"->{     // ADMIN
+                List<User> usersList = mongoManager.getBadUsers(8*page, 8);
+                fillUsers(usersList);
             }
         }
     }
@@ -253,7 +239,7 @@ public class MainMenuController  {
 
 
     private void fillWines(List<Wine> WineList) {
-        if (WineList.size() == 0)
+        if (WineList.size() != 3)
             nextBTN.setDisable(true);
         setGridWine();
         int row = 0;
@@ -277,6 +263,7 @@ public class MainMenuController  {
         }
         return pane;
     }
+
     private void setGridWine() {
         cleanGrid();
         cardsGrid.setAlignment(Pos.CENTER);
@@ -325,7 +312,6 @@ public class MainMenuController  {
     }
 
 
-
     private void cleanGrid() {
         cardsGrid.getColumnConstraints().clear();
         while (cardsGrid.getChildren().size() > 0) {
@@ -336,10 +322,7 @@ public class MainMenuController  {
     private void goForward () {
         page++;
         backBTN.setDisable(false);
-        switch (special) {
-            case 0 -> handleResearch();
-            //default -> startSpecialSearch();
-        }
+        handleResearch();
     }
 
     private void goBack () {
@@ -349,10 +332,7 @@ public class MainMenuController  {
             backBTN.setDisable(true);
         }
         nextBTN.setDisable(false);
-        switch (special) {
-            case 0 -> handleResearch();
-            //default -> startSpecialSearch();
-        }
+        handleResearch();
     }
 
 
@@ -365,7 +345,7 @@ public class MainMenuController  {
     @FXML
     public void gotosuggestion(ActionEvent event) {
         this.event = event;
-        utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/suggestion.fxml",event);
+        utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/specialSearch.fxml",event);
     }
 
     @FXML
@@ -385,7 +365,4 @@ public class MainMenuController  {
         utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/start.fxml",event);
     }
 
-
-    public void switchForm(ActionEvent event) {
-    }
 }

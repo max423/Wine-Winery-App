@@ -24,28 +24,56 @@ public class WinePageController {
     private User user;
     private MongoDBManager mongoMan;
     private Neo4jManager neoMan;
-    @FXML private Label username_side;
-    @FXML private Button backBTN;
-    @FXML private Text wineId;
-    @FXML private Text category;
-    @FXML private Text winename;
-    @FXML private Text winemaker;
-    @FXML private Text year;
-    @FXML private Text winedescription;
-    @FXML private Text wineinfo;
-    @FXML private Text price;
-    @FXML private Text grapes;
-    @FXML private VBox commentsBox;
-    @FXML private Button likeBTN;
-    @FXML private Text like;
-    @FXML private Button addInWineryBTN;
-
-    @FXML private Button commentBTN;
-    @FXML private TextField commentText;
-    @FXML private Text comNum;
-    @FXML private ScrollPane scrollpane;
     private ActionEvent event;
-
+    private String validId;
+    private int currentPage;
+    private int commentsPerPage;
+    @FXML
+    private Label username_side;
+    @FXML
+    private Button backBTN;
+    @FXML
+    private Text wineId;
+    @FXML
+    private Text category;
+    @FXML
+    private Text winename;
+    @FXML
+    private Text winemaker;
+    @FXML
+    private Text year;
+    @FXML
+    private Text winedescription;
+    @FXML
+    private Text wineinfo;
+    @FXML
+    private Text price;
+    @FXML
+    private Text grapes;
+    @FXML
+    private VBox commentsBox;
+    @FXML
+    private Button likeBTN;
+    @FXML
+    private Text like;
+    @FXML
+    private Button addInWineryBTN;
+    @FXML
+    private Button AllCommentBTN;
+    @FXML
+    private Button commentBTN;
+    @FXML
+    private TextField commentText;
+    @FXML
+    private Text comNum;
+    @FXML
+    private ScrollPane scrollpane;
+    @FXML
+    private Button CnextBTN;
+    @FXML
+    private Button CbackBTN;
+    @FXML
+    private Button gotomyprofile;
 
     public void initialize() {
         commentsBox.setSpacing(10);
@@ -54,10 +82,13 @@ public class WinePageController {
         backBTN.setOnMouseClicked(mouseEvent -> clickbackBTN(mouseEvent));
         addInWineryBTN.setOnMouseClicked(mouseEvent -> clickaddInWineryBTN(mouseEvent));
         likeBTN.setOnMouseClicked(mouseEvent -> clickLikeBTN(mouseEvent));
-        //webLink.setOnMouseClicked(mouseEvent -> clickOpenPdf(mouseEvent));
+        AllCommentBTN.setOnMouseClicked(mouseEvent -> clickAllCommentBTN(mouseEvent));
         commentBTN.setOnMouseClicked(mouseEvent -> clickCommentBTN(mouseEvent));
         scrollpane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        CnextBTN.setOnMouseClicked(mouseEvent -> clickNextPageBTN(mouseEvent));
+        CbackBTN.setOnMouseClicked(mouseEvent -> clickPreviousPageBTN(mouseEvent));
     }
+
     public void setWinePage(Wine wine) {
         this.wine = wine;
         this.user = Session.getInstance().getLoggedUser();
@@ -68,51 +99,70 @@ public class WinePageController {
 
         winename.setText(wine.getName());
         // divisione vivino & glugulp
-        String validId;
+
         if (wine.getVivino_id() != null) {
             validId = wine.getVivino_id();
             wineId.setText("Vivino : " + validId);
-        }
-        else {
+        } else {
             validId = wine.getGlugulp_id();
             wineId.setText("Glugulp : " + validId);
         }
 
         category.setText(wine.getVarietal());
         winemaker.setText(wine.getWinemaker());
-        year.setText(String.valueOf(wine.getYear()));
+
+        if (wine.getYear() == 0)
+            year.setText("Sans année");
+        else
+            year.setText(String.valueOf(wine.getYear()));
+
         price.setText(String.valueOf(wine.getPrice()));
         winedescription.setText(wine.getDescription().replace("\n", " "));
         wineinfo.setText(wine.getInfo());
         grapes.setText(wine.getGrapes());
 
-        if(neoMan.userLikeWine(user.getUsername(), wine))
+        //System.out.println("TEST// " + neoMan.userLikeWine(user.getUsername(), wine));
+        //System.out.println("TEST// " + user.getUsername() + " LIKE " + wine.getName());
+
+        if (neoMan.userLikeWine(user.getUsername(), wine))
             likeBTN.setText("Unlike");
         else
             likeBTN.setText("Like");
+
         like.setText(Integer.toString(neoMan.getNumLikes(wine)));
+        currentPage = 0;
+        commentsPerPage = 10;
+        CnextBTN.setVisible(false);
+        CbackBTN.setVisible(false);
         setComment();
 
+        if (Session.getInstance().getLoggedUser().getType() == 2) {
+            gotomyprofile.setVisible(false);
+            likeBTN.setVisible(false);
+            addInWineryBTN.setVisible(false);
+            commentBTN.setDisable(true);
+        }
+
     }
-    private void clickLikeBTN (MouseEvent mouseEvent){
-        if(Objects.equals(likeBTN.getText(), "Like")){
+
+    private void clickLikeBTN(MouseEvent mouseEvent) {
+        if (Objects.equals(likeBTN.getText(), "Like")) {
             neoMan.like(user, wine);
-            System.out.println("TEST// "+ user.getUsername() + " LIKE " + wine.getName() );
+            System.out.println("TEST// " + user.getUsername() + " LIKE " + wine.getName());
             like.setText(Integer.toString(neoMan.getNumLikes(wine)));
             likeBTN.setText("UnLike");
-        }else{
+        } else {
             neoMan.unlike(user, wine);
             like.setText(Integer.toString(neoMan.getNumLikes(wine)));
             likeBTN.setText("Like");
         }
     }
 
-
-    private void clickaddInWineryBTN (MouseEvent mouseEvent) {
+    private void clickaddInWineryBTN(MouseEvent mouseEvent) {
         if (!Session.getInstance().getLoggedUser().getWinerys().isEmpty()) {
             Iterator<Winery> it = Session.getInstance().getLoggedUser().getWinerys().iterator();
             List<String> choices = new ArrayList<>();
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 choices.add(it.next().getTitle());
             }
             ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
@@ -121,10 +171,10 @@ public class WinePageController {
             dialog.setContentText("Winery:");
 
             Optional<String> result = dialog.showAndWait();
-            if (result.isPresent()){
+            if (result.isPresent()) {
 
                 // Check if selected Winery does not exceed limit
-                for (int i=0; i<Session.getInstance().getLoggedUser().getWinerys().size(); i++) {
+                for (int i = 0; i < Session.getInstance().getLoggedUser().getWinerys().size(); i++) {
                     Winery tmp = Session.getInstance().getLoggedUser().getWinerys().get(i);
                     if (tmp.getWines().size() > 100) {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -136,15 +186,15 @@ public class WinePageController {
                     }
                 }
 
-                UpdateResult res = mongoMan.addWineToWinery(Session.getInstance().getLoggedUser().getUsername(), result.get(), wine);
-                if(res.getModifiedCount() == 0){
+                UpdateResult res = mongoMan.addWineToWinery(Session.getInstance().getLoggedUser().getUsername(),
+                        result.get(), wine);
+                if (res.getModifiedCount() == 0) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Information Dialog");
                     alert.setHeaderText(null);
                     alert.setContentText("This wine is already present in this Winery!");
                     alert.showAndWait();
-                }
-                else {
+                } else {
                     // Update Session User Object
                     for (Winery wn : Session.getInstance().getLoggedUser().getWinerys()) {
                         if (wn.getTitle().equals(result.get())) {
@@ -154,49 +204,48 @@ public class WinePageController {
                     }
                 }
             }
-        }
-        else {
+        } else {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Information Dialog");
             alert.setHeaderText(null);
-            alert.setContentText("You haven't created a reading list yet!");
+            alert.setContentText("You haven't created a winery yet!");
             alert.showAndWait();
         }
     }
+
     private void setComment() {
-        int numComment = 0;
+        int numComment = mongoMan.countAllComment(wine);
         if (wine.getComments() != null) {
             commentsBox.getChildren().clear();
             Iterator<Comment> it = wine.getComments().iterator();
 
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 Comment c = it.next();
                 Pane p = loadCommentElement(c, wine);
 
                 commentsBox.getChildren().add(p);
-                numComment++;
             }
         }
         comNum.setText(String.valueOf(numComment));
     }
 
-    private Pane loadCommentElement (Comment cm, Wine wn) {
+    private Pane loadCommentElement(Comment cm, Wine wn) {
         Pane pane = null;
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/it/unipi/dii/lsmd/winewineryapp/layout/commentElement.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/it/unipi/dii/lsmd/winewineryapp/layout/commentElement.fxml"));
             pane = loader.load();
             CommentController ctrl = loader.getController();
             ctrl.textProperty().bindBidirectional(comNum.textProperty());
-            ctrl.setCommentCard(cm, wn, false);
+            ctrl.setCommentCard(cm, wn);
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return pane;
     }
 
-    private void clickbackBTN (MouseEvent mouseEvent) {
+    private void clickbackBTN(MouseEvent mouseEvent) {
         // Pop
         Session.getInstance().getPreviousPageWines().remove(
                 Session.getInstance().getPreviousPageWines().size() - 1);
@@ -216,15 +265,62 @@ public class WinePageController {
         }
     }
 
-    private void clickCommentBTN (MouseEvent mouseEvent){
-        if((!commentText.getText().isEmpty()) && (commentText.getText().length() <= 100)){
-            Comment comment = new Comment(user.getUsername(), commentText.getText(), new Date());
-            mongoMan.addComment(wine, comment);
+    private void clickAllCommentBTN(MouseEvent mouseEvent) {
+        if (wine.getComments() != null) {
+            commentsBox.getChildren().clear();
+            CnextBTN.setVisible(true);
+            CbackBTN.setVisible(true);
+            Iterator<Comment> it = mongoMan.getAllComments(wine, currentPage, commentsPerPage).iterator();
+
+            while (it.hasNext()) {
+                Comment c = it.next();
+                Pane p = loadCommentElement(c, wine);
+
+                commentsBox.getChildren().add(p);
+            }
+        }
+    }
+
+    private void clickNextPageBTN(MouseEvent mouseEvent) {
+        currentPage++;
+        clickAllCommentBTN(mouseEvent);
+    }
+
+    private void clickPreviousPageBTN(MouseEvent mouseEvent) {
+        if (currentPage > 1) {
+            currentPage--;
+            clickAllCommentBTN(mouseEvent);
+        }
+    }
+
+    private void clickCommentBTN(MouseEvent mouseEvent) {
+        if ((!commentText.getText().isEmpty()) && (commentText.getText().length() <= 100)) {
+            Comment comment = new Comment(validId, user.getUsername(), commentText.getText(), new Date());
+
+            if (!mongoMan.addRecentComment(wine, comment)) {
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Information Dialog");
+                alert.setHeaderText(null);
+                alert.setContentText("Database not available!");
+                alert.showAndWait();
+            }
+
+            if (!mongoMan.addTotalComment(wine, comment)) {
+                mongoMan.deleteRecentComment(wine, comment);
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Information Dialog");
+                alert.setHeaderText(null);
+                alert.setContentText("Database not available!");
+                alert.showAndWait();
+            }
+
             wine = mongoMan.getWineById(wine);
             setComment();
             commentText.setText("");
 
-        }else{
+        } else {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Information Dialog");
             alert.setHeaderText(null);
@@ -236,13 +332,16 @@ public class WinePageController {
     @FXML
     public void gotosearch(ActionEvent event) {
         this.event = event;
-        utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/main.fxml",event);
+        utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/main.fxml", event);
     }
 
     public void gotosuggestion(ActionEvent event) {
         this.event = event;
-        ProfileController ctrl = (ProfileController) utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/suggestion.fxml",event);
-        ctrl.setProfilePage(Session.getInstance().getLoggedUser());
+        // ProfileController ctrl = (ProfileController)
+        // utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/specialSearch.fxml",event);
+        // ctrl.setProfilePage(Session.getInstance().getLoggedUser());
+        this.event = event;
+        utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/specialSearch.fxml", event);
     }
 
     @FXML
@@ -257,7 +356,7 @@ public class WinePageController {
     private void logout(ActionEvent event) {
         this.event = event;
         Session.resetInstance();
-        utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/start.fxml",event);
+        utilitis.changeScene("/it/unipi/dii/lsmd/winewineryapp/layout/start.fxml", event);
     }
 
 }

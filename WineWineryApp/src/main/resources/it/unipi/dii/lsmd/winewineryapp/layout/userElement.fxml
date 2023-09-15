@@ -51,7 +51,7 @@
                            </font></Text>
                                 <HBox alignment="TOP_CENTER" prefHeight="17.0" prefWidth="172.0" style="-fx-spacing: 5;">
                                     <children>
-                                        <Label fx:id="analyticLabelName" prefHeight="17.0" prefWidth="92.0" text="categories saved" textFill="#6b1c1c" />
+                                        <Label fx:id="analyticLabelName" prefHeight="17.0" prefWidth="92.0" text="Num Bottle" textFill="#6b1c1c" />
                                         <Text fx:id="analyticValue" fill="#9e0707" strokeType="OUTSIDE" strokeWidth="0.0" text="Value" wrappingWidth="36.484375">
                                             <font>
                                                 <Font name="System Bold" size="12.0" />

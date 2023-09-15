@@ -1,5 +1,4 @@
 package it.unipi.dii.lsmd.winewineryapp.controller;
-
 import it.unipi.dii.lsmd.winewineryapp.model.User;
 import it.unipi.dii.lsmd.winewineryapp.persistence.MongoDBManager;
 import it.unipi.dii.lsmd.winewineryapp.persistence.MongoDriver;
@@ -12,7 +11,6 @@ import javafx.scene.text.Text;
 public class UserElementController {
     private User user;
     private MongoDBManager mongoMan;
-
     @FXML private Label usernameLb;
     @FXML private Text emailTf;
     @FXML private Label analyticLabelName;
@@ -27,7 +25,6 @@ public class UserElementController {
 
         usernameLb.setText(user.getUsername());
         emailTf.setText(user.getEmail());
-
 
         if (analyticLabelName != null) {
             this.analyticLabelName.setText(analyticLabelName);

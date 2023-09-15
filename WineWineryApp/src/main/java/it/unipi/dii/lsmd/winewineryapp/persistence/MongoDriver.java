@@ -1,5 +1,6 @@
 package it.unipi.dii.lsmd.winewineryapp.persistence;
 
+import com.mongodb.client.MongoDatabase;
 import it.unipi.dii.lsmd.winewineryapp.utils.utilitis;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -36,6 +37,11 @@ public class MongoDriver {
     private MongoDriver(Properties configurationParameters){
         this.mongoFirstIp = configurationParameters.getProperty("mongoFirstIp");
         this.mongodbName = configurationParameters.getProperty("mongoDbName");
+        this.mongoFirstIp = configurationParameters.getProperty("mongoFirstIp");
+        this.mongoFirstPort = Integer.parseInt(configurationParameters.getProperty("mongoFirstPort"));
+        this.mongoSecondIp = configurationParameters.getProperty("mongoSecondIp");
+        this.mongoSecondPort = Integer.parseInt(configurationParameters.getProperty("mongoSecondPort"));
+
     };
 
 
@@ -55,8 +61,8 @@ public class MongoDriver {
 
         try
         {
-            String string = "mongodb://localhost:27017";
-            //string += mongoUsername + ":" + mongoPassword + "@" + mongoFirstIp + ":" + mongoFirstPort + "," + mongoSecondIp + ":" + mongoSecondPort + "," + mongoThirdIp + ":" + mongoThirdPort;
+            String string = "mongodb://localhost:27007";
+            string +=  "," + mongoFirstIp + ":" + mongoFirstPort + "," + mongoSecondIp + ":" + mongoSecondPort ;
             ConnectionString connectionString = new ConnectionString(string);
 
             pojoCodecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
@@ -64,7 +70,7 @@ public class MongoDriver {
 
             MongoClientSettings clientSettings = MongoClientSettings.builder()
                     .applyConnectionString(connectionString)
-                    .readPreference(ReadPreference.primaryPreferred())
+                    .readPreference(ReadPreference.nearest())
                     .retryWrites(true)
                     .writeConcern(WriteConcern.W1)
                     .codecRegistry(pojoCodecRegistry)

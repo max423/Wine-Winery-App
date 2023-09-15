@@ -65,7 +65,7 @@
                                                 <String fx:value="shadow" />
                                             </styleClass>
                                         </Button>
-                              <Button fx:id="suggestion" layoutX="16.0" layoutY="242.0" mnemonicParsing="false" onAction="#gotosuggestion" prefHeight="35.0" prefWidth="180.0" styleClass="nav-btn" stylesheets="@../style/mainMenu.css" text="Suggestion" />
+                                        <Button fx:id="suggestion" layoutX="16.0" layoutY="242.0" mnemonicParsing="false" onAction="#gotosuggestion" prefHeight="35.0" prefWidth="180.0" styleClass="nav-btn" stylesheets="@../style/mainMenu.css" text="Suggestion" />
                                     </children>
                                 </AnchorPane>
                             </children>
@@ -93,14 +93,14 @@
                                                                 <String fx:value="dynamic-button" />
                                                             </styleClass>
                                                         </Button>
-                                          <Label fx:id="errorTf" prefHeight="43.0" prefWidth="1983.0" textAlignment="CENTER" textFill="RED">
-                                             <HBox.margin>
-                                                <Insets left="20.0" />
-                                             </HBox.margin>
-                                             <padding>
-                                                <Insets left="450.0" />
-                                             </padding>
-                                          </Label>
+                                                        <Label fx:id="errorTf" prefHeight="43.0" prefWidth="1983.0" textAlignment="CENTER" textFill="RED">
+                                                            <HBox.margin>
+                                                                <Insets left="20.0" />
+                                                            </HBox.margin>
+                                                            <padding>
+                                                                <Insets left="450.0" />
+                                                            </padding>
+                                                        </Label>
                                                         <HBox alignment="TOP_RIGHT" prefHeight="53.0" prefWidth="1206.0" HBox.hgrow="ALWAYS">
                                                             <children>
                                                                 <Button fx:id="nextBTN" disable="true" minHeight="43.0" minWidth="40.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="45.0">
@@ -131,145 +131,145 @@
                                                 </HBox>
                                                 <HBox alignment="CENTER" prefHeight="93.0" prefWidth="1273.0" VBox.vgrow="ALWAYS">
                                                     <children>
-                                          <ScrollPane prefHeight="259.0" prefWidth="1273.0">
-                                             <content>
-                                                              <GridPane fx:id="cardsGrid" alignment="CENTER" prefHeight="318.0" prefWidth="1272.0">
-                                                                  <columnConstraints>
-                                                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                                                  </columnConstraints>
-                                                   <rowConstraints>
-                                                      <RowConstraints />
-                                                   </rowConstraints>
-                                                              </GridPane>
-                                             </content>
-                                          </ScrollPane>
+                                                        <ScrollPane prefHeight="259.0" prefWidth="1273.0">
+                                                            <content>
+                                                                <GridPane fx:id="cardsGrid" alignment="CENTER" prefHeight="318.0" prefWidth="1272.0">
+                                                                    <columnConstraints>
+                                                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                                    </columnConstraints>
+                                                                    <rowConstraints>
+                                                                        <RowConstraints />
+                                                                    </rowConstraints>
+                                                                </GridPane>
+                                                            </content>
+                                                        </ScrollPane>
                                                     </children>
                                                     <VBox.margin>
                                                         <Insets bottom="20.0" left="20.0" right="20.0" />
                                                     </VBox.margin>
                                                 </HBox>
-                                    <HBox fx:id="WineParameters" prefHeight="197.0" prefWidth="1284.0" visible="false">
-                                       <children>
-                                          <VBox prefHeight="170.0" prefWidth="498.0">
-                                             <children>
-                                                <SplitPane dividerPositions="0.29797979797979796" prefHeight="100.0" prefWidth="498.0">
-                                                   <items>
-                                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                                         <children>
-                                                            <Text layoutX="36.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Max Year" />
-                                                            <Text layoutX="39.0" layoutY="69.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Min Year" />
-                                                         </children>
-                                                      </AnchorPane>
-                                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="89.0" prefWidth="345.0">
-                                                         <children>
-                                                            <Slider fx:id="MaxYearWine" blockIncrement="1.0" layoutX="14.0" layoutY="14.0" majorTickUnit="20.0" max="2023.0" min="1950.0" minorTickCount="1" prefHeight="16.0" prefWidth="240.0" showTickLabels="true" showTickMarks="true" />
-                                                            <Slider fx:id="MinYearWine" blockIncrement="1.0" layoutX="14.0" layoutY="55.0" majorTickUnit="20.0" max="2023.0" min="1950.0" minorTickCount="1" prefHeight="16.0" prefWidth="240.0" showTickLabels="true" />
-                                                            <Label fx:id="MaxYearLabel" layoutX="270.0" layoutY="12.0" prefHeight="17.0" prefWidth="52.0" text="" />
-                                                            <Label fx:id="MinYearLabel" layoutX="272.0" layoutY="55.0" prefHeight="17.0" prefWidth="46.0" text="" />
-                                                         </children>
-                                                      </AnchorPane>
-                                                   </items>
-                                                   <VBox.margin>
-                                                      <Insets bottom="5.0" left="20.0" />
-                                                   </VBox.margin>
-                                                </SplitPane>
-                                                <SplitPane dividerPositions="0.29797979797979796" prefHeight="108.0" prefWidth="498.0">
-                                                   <items>
-                                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="168.0" prefWidth="105.0">
-                                                         <children>
-                                                            <Text layoutX="36.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Max Price" />
-                                                            <Text layoutX="39.0" layoutY="64.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Min Price" />
-                                                         </children>
-                                                      </AnchorPane>
-                                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="115.0" prefWidth="345.0">
-                                                         <children>
-                                                            <Slider fx:id="MaxPriceWine" layoutX="14.0" layoutY="14.0" majorTickUnit="200.0" max="1000.0" prefHeight="16.0" prefWidth="240.0" showTickLabels="true" />
-                                                            <Slider fx:id="MinPriceWine" layoutX="14.0" layoutY="51.0" majorTickUnit="200.0" max="1000.0" prefHeight="16.0" prefWidth="240.0" showTickLabels="true" />
-                                                            <Label fx:id="MaxPriceLabel" layoutX="275.0" layoutY="12.0" prefHeight="17.0" prefWidth="46.0" text="" />
-                                                            <Label fx:id="MinPriceLabel" layoutX="276.0" layoutY="51.0" prefHeight="17.0" prefWidth="38.0" text="" />
-                                                         </children>
-                                                      </AnchorPane>
-                                                   </items>
-                                                   <VBox.margin>
-                                                      <Insets bottom="5.0" left="20.0" />
-                                                   </VBox.margin>
-                                                </SplitPane>
-                                             </children>
-                                          </VBox>
-                                          <SplitPane dividerPositions="0.296875" prefHeight="156.0" prefWidth="482.0">
-                                             <items>
-                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="126.0">
-                                                   <children>
-                                                      <Text layoutX="37.0" layoutY="30.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Country" />
-                                                      <Text layoutX="39.0" layoutY="64.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Varietal" />
-                                                      <Text layoutX="39.0" layoutY="102.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Grapes" />
-                                                      <Text layoutX="31.0" layoutY="130.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Winemaker" />
-                                                   </children>
-                                                </AnchorPane>
-                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="333.0">
-                                                   <children>
-                                                      <TextField fx:id="keywordGrapesWine" alignment="CENTER" layoutX="24.0" layoutY="79.0" prefHeight="27.0" prefWidth="254.0" promptText="Search by keywords" styleClass="transparent">
-                                                         <font>
-                                                            <Font size="14.0" />
-                                                         </font>
-                                                      </TextField>
-                                                      <TextField fx:id="keywordVarietalWine" alignment="CENTER" layoutX="24.0" layoutY="46.0" prefHeight="27.0" prefWidth="254.0" promptText="Search by keywords" styleClass="transparent">
-                                                         <font>
-                                                            <Font size="14.0" />
-                                                         </font>
-                                                      </TextField>
-                                                      <TextField fx:id="keywordCountryWine" alignment="CENTER" layoutX="24.0" layoutY="13.0" prefHeight="27.0" prefWidth="254.0" promptText="Search by keywords" styleClass="transparent">
-                                                         <font>
-                                                            <Font size="14.0" />
-                                                         </font>
-                                                      </TextField>
-                                                      <TextField fx:id="keywordWinemakerWine" alignment="CENTER" layoutX="24.0" layoutY="113.0" prefHeight="27.0" prefWidth="254.0" promptText="Search by keywords" styleClass="transparent">
-                                                         <font>
-                                                            <Font size="14.0" />
-                                                         </font>
-                                                      </TextField>
-                                                   </children>
-                                                </AnchorPane>
-                                             </items>
-                                             <HBox.margin>
-                                                <Insets bottom="5.0" left="20.0" />
-                                             </HBox.margin>
-                                          </SplitPane>
-                                       </children>
-                                       <VBox.margin>
-                                          <Insets bottom="10.0" />
-                                       </VBox.margin>
-                                    </HBox>
+                                                <HBox fx:id="WineParameters" prefHeight="197.0" prefWidth="1284.0" visible="false">
+                                                    <children>
+                                                        <VBox prefHeight="170.0" prefWidth="498.0">
+                                                            <children>
+                                                                <SplitPane dividerPositions="0.29797979797979796" prefHeight="100.0" prefWidth="498.0">
+                                                                    <items>
+                                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                                                            <children>
+                                                                                <Text layoutX="36.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Max Year" />
+                                                                                <Text layoutX="39.0" layoutY="69.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Min Year" />
+                                                                            </children>
+                                                                        </AnchorPane>
+                                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="89.0" prefWidth="345.0">
+                                                                            <children>
+                                                                                <Slider fx:id="MaxYearWine" blockIncrement="1.0" layoutX="14.0" layoutY="14.0" majorTickUnit="20.0" max="2023.0" min="1950.0" minorTickCount="1" prefHeight="16.0" prefWidth="240.0" showTickLabels="true" showTickMarks="true" />
+                                                                                <Slider fx:id="MinYearWine" blockIncrement="1.0" layoutX="14.0" layoutY="55.0" majorTickUnit="20.0" max="2023.0" min="1950.0" minorTickCount="1" prefHeight="16.0" prefWidth="240.0" showTickLabels="true" />
+                                                                                <Label fx:id="MaxYearLabel" layoutX="270.0" layoutY="12.0" prefHeight="17.0" prefWidth="52.0" text="" />
+                                                                                <Label fx:id="MinYearLabel" layoutX="272.0" layoutY="55.0" prefHeight="17.0" prefWidth="46.0" text="" />
+                                                                            </children>
+                                                                        </AnchorPane>
+                                                                    </items>
+                                                                    <VBox.margin>
+                                                                        <Insets bottom="5.0" left="20.0" />
+                                                                    </VBox.margin>
+                                                                </SplitPane>
+                                                                <SplitPane dividerPositions="0.29797979797979796" prefHeight="108.0" prefWidth="498.0">
+                                                                    <items>
+                                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="168.0" prefWidth="105.0">
+                                                                            <children>
+                                                                                <Text layoutX="36.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Max Price" />
+                                                                                <Text layoutX="39.0" layoutY="64.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Min Price" />
+                                                                            </children>
+                                                                        </AnchorPane>
+                                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="115.0" prefWidth="345.0">
+                                                                            <children>
+                                                                                <Slider fx:id="MaxPriceWine" layoutX="14.0" layoutY="14.0" majorTickUnit="200.0" max="1000.0" prefHeight="16.0" prefWidth="240.0" showTickLabels="true" />
+                                                                                <Slider fx:id="MinPriceWine" layoutX="14.0" layoutY="51.0" majorTickUnit="200.0" max="1000.0" prefHeight="16.0" prefWidth="240.0" showTickLabels="true" />
+                                                                                <Label fx:id="MaxPriceLabel" layoutX="275.0" layoutY="12.0" prefHeight="17.0" prefWidth="46.0" text="" />
+                                                                                <Label fx:id="MinPriceLabel" layoutX="276.0" layoutY="51.0" prefHeight="17.0" prefWidth="38.0" text="" />
+                                                                            </children>
+                                                                        </AnchorPane>
+                                                                    </items>
+                                                                    <VBox.margin>
+                                                                        <Insets bottom="5.0" left="20.0" />
+                                                                    </VBox.margin>
+                                                                </SplitPane>
+                                                            </children>
+                                                        </VBox>
+                                                        <SplitPane dividerPositions="0.296875" prefHeight="156.0" prefWidth="482.0">
+                                                            <items>
+                                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="126.0">
+                                                                    <children>
+                                                                        <Text layoutX="37.0" layoutY="30.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Country" />
+                                                                        <Text layoutX="39.0" layoutY="64.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Varietal" />
+                                                                        <Text layoutX="39.0" layoutY="102.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Grapes" />
+                                                                        <Text layoutX="31.0" layoutY="130.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Winemaker" />
+                                                                    </children>
+                                                                </AnchorPane>
+                                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="333.0">
+                                                                    <children>
+                                                                        <TextField fx:id="keywordGrapesWine" alignment="CENTER" layoutX="24.0" layoutY="79.0" prefHeight="27.0" prefWidth="254.0" promptText="Search by keywords" styleClass="transparent">
+                                                                            <font>
+                                                                                <Font size="14.0" />
+                                                                            </font>
+                                                                        </TextField>
+                                                                        <TextField fx:id="keywordVarietalWine" alignment="CENTER" layoutX="24.0" layoutY="46.0" prefHeight="27.0" prefWidth="254.0" promptText="Search by keywords" styleClass="transparent">
+                                                                            <font>
+                                                                                <Font size="14.0" />
+                                                                            </font>
+                                                                        </TextField>
+                                                                        <TextField fx:id="keywordCountryWine" alignment="CENTER" layoutX="24.0" layoutY="13.0" prefHeight="27.0" prefWidth="254.0" promptText="Search by keywords" styleClass="transparent">
+                                                                            <font>
+                                                                                <Font size="14.0" />
+                                                                            </font>
+                                                                        </TextField>
+                                                                        <TextField fx:id="keywordWinemakerWine" alignment="CENTER" layoutX="24.0" layoutY="113.0" prefHeight="27.0" prefWidth="254.0" promptText="Search by keywords" styleClass="transparent">
+                                                                            <font>
+                                                                                <Font size="14.0" />
+                                                                            </font>
+                                                                        </TextField>
+                                                                    </children>
+                                                                </AnchorPane>
+                                                            </items>
+                                                            <HBox.margin>
+                                                                <Insets bottom="5.0" left="20.0" />
+                                                            </HBox.margin>
+                                                        </SplitPane>
+                                                    </children>
+                                                    <VBox.margin>
+                                                        <Insets bottom="10.0" />
+                                                    </VBox.margin>
+                                                </HBox>
                                             </children>
                                         </VBox>
                                     </center>
-                           <top>
-                              <HBox prefHeight="60.0" prefWidth="1313.0" BorderPane.alignment="CENTER">
-                                 <children>
-                                    <VBox prefHeight="353.0" prefWidth="223.0">
-                                       <children>
-                                           <ComboBox fx:id="ResearchType" onAction="#switchSearch" prefHeight="39.0" prefWidth="213.0" promptText="Type of research" styleClass="transparent">
-                                             <VBox.margin>
-                                                <Insets bottom="5.0" right="10.0" top="10.0" />
-                                             </VBox.margin>
-                                          </ComboBox>
-                                       </children>
-                                       <HBox.margin>
-                                          <Insets left="30.0" />
-                                       </HBox.margin>
-                                    </VBox>
-                                    <VBox prefHeight="57.0" prefWidth="807.0">
-                                       <children>
+                                    <top>
+                                        <HBox prefHeight="60.0" prefWidth="1313.0" BorderPane.alignment="CENTER">
+                                            <children>
+                                                <VBox prefHeight="353.0" prefWidth="223.0">
+                                                    <children>
+                                                        <ComboBox fx:id="ResearchType" onAction="#switchSearch" prefHeight="39.0" prefWidth="213.0" promptText="Type of research" styleClass="transparent">
+                                                            <VBox.margin>
+                                                                <Insets bottom="5.0" right="10.0" top="10.0" />
+                                                            </VBox.margin>
+                                                        </ComboBox>
+                                                    </children>
+                                                    <HBox.margin>
+                                                        <Insets left="30.0" />
+                                                    </HBox.margin>
+                                                </VBox>
+                                                <VBox prefHeight="57.0" prefWidth="807.0">
+                                                    <children>
                                                         <TextField fx:id="keywordTf" alignment="CENTER" prefHeight="44.0" prefWidth="423.0" promptText="Search by keywords" styleClass="transparent">
                                                             <font>
                                                                 <Font size="14.0" />
                                                             </font>
-                                             <VBox.margin>
-                                                <Insets bottom="10.0" top="10.0" />
-                                             </VBox.margin>
+                                                            <VBox.margin>
+                                                                <Insets bottom="10.0" top="10.0" />
+                                                            </VBox.margin>
                                                         </TextField>
-                                       </children>
-                                    </VBox>
+                                                    </children>
+                                                </VBox>
                                                 <Button fx:id="searchBTN" onAction="#startResearch" prefHeight="40.0" prefWidth="220.0" text="Search">
                                                     <styleClass>
                                                         <String fx:value="add-btn" />
@@ -278,16 +278,16 @@
                                                     <font>
                                                         <Font name="System Bold" size="12.0" />
                                                     </font>
-                                       <HBox.margin>
-                                          <Insets left="10.0" top="10.0" />
-                                       </HBox.margin>
-                                    </Button>
-                                 </children>
-                                 <BorderPane.margin>
-                                    <Insets top="10.0" />
-                                 </BorderPane.margin>
-                              </HBox>
-                           </top>
+                                                    <HBox.margin>
+                                                        <Insets left="10.0" top="10.0" />
+                                                    </HBox.margin>
+                                                </Button>
+                                            </children>
+                                            <BorderPane.margin>
+                                                <Insets top="10.0" />
+                                            </BorderPane.margin>
+                                        </HBox>
+                                    </top>
                                 </BorderPane>
                             </children>
                         </AnchorPane>
